@@ -159,7 +159,11 @@ class FFMPEG_VideoWriter:
             and (size[0] % 2 == 0)
             and (size[1] % 2 == 0)
         ):
-            cmd.extend(["-pix_fmt", "yuva420p"])
+            # h264 encoder only supports yuv pixel formats, so allow if requested
+            if pixel_format is None or not pixel_format.startswith('yuv'):
+                cmd.extend(["-pix_fmt", "yuv420p"])
+            else:
+                cmd.extend(["-pix_fmt", pixel_format])
         else:
             # For all other codecs, we use the pixel format specified by the user
             # or the default one.
