@@ -61,9 +61,11 @@ class FFMPEG_VideoWriter:
       Set to ``True`` if there is a mask in the video to be encoded.
 
     pixel_format : str, optional
-      Optional: Pixel format for the output video file. If is not specified
+      Optional: Pixel format for the output video file. If not specified
       ``"rgb24"`` will be used as the default format unless ``with_mask`` is
-      set as ``True``, then ``"rgba"`` will be used.
+      set as ``True``, then ``"rgba"`` will be used. If the codec is
+      ``libx264`` or ``h264_nvenc``, the pixel format will be set to
+      ``"yuv420p"`` by default, and will only accept other ``yuv`` formats.
 
     logfile : int, optional
       File descriptor for logging output. If not defined, ``subprocess.PIPE``
@@ -160,7 +162,7 @@ class FFMPEG_VideoWriter:
             and (size[1] % 2 == 0)
         ):
             # h264 encoder only supports yuv pixel formats, so allow if requested
-            if pixel_format is None or not pixel_format.startswith('yuv'):
+            if pixel_format is None or not pixel_format.startswith("yuv"):
                 cmd.extend(["-pix_fmt", "yuv420p"])
             else:
                 cmd.extend(["-pix_fmt", pixel_format])
